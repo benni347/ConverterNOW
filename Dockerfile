@@ -4,8 +4,8 @@ ENV HOME="/root"
 ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:$HOME/.pub-cache/bin:${PATH}"
 ENV FLUTTER_ROOT="/usr/local/flutter"
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         bash \
         curl \
         git \
@@ -13,7 +13,7 @@ RUN apt-get update && \
         unzip \
         libstdc++6 \
         ca-certificates && \
-    apt-get clean && \
+    DEBIAN_FRONTEND=noninteractive apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 RUN git clone --depth 1 --branch stable https://github.com/flutter/flutter.git "$FLUTTER_ROOT"
