@@ -27,9 +27,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 
 RUN git clone --depth 1 --branch ${FLUTTER_VERSION} https://github.com/flutter/flutter.git ${FLUTTER_HOME}
 
-RUN flutter doctor && \
-    flutter config --enable-web && \
-    flutter precache --web && \
+RUN flutter config --no-enable-windows-desktop --no-enable-macos-desktop --no-enable-linux-desktop --no-enable-android --no-enable-ios --enable-web && \
+    flutter channel stable && \
+    flutter doctor && \
+    flutter precache --web --no-ios --no-windows --no-macos --no-linux --no-android && \
     chown -R root:root ${FLUTTER_HOME}
 
 WORKDIR /app
