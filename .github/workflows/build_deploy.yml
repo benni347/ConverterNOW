@@ -194,7 +194,9 @@ jobs:
           tag: ${{ steps.version.outputs.content }}
           commit: ${{ github.sha }}
           allowUpdates: true
+
   build_docker:
+    needs: build_windows
     runs-on: ubuntu-latest
     env:
       REGISTRY: ghcr.io
