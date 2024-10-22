@@ -1,8 +1,14 @@
 FROM debian:12-slim AS builder
 
+USER root
+
 ENV HOME="/root"
-ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:$HOME/.pub-cache/bin:${PATH}"
-ENV FLUTTER_ROOT="/usr/local/flutter"
+ARG flutter_version="stable"
+
+ENV FLUTTER_HOME=${HOME}/sdks/flutter \
+    FLUTTER_VERSION=$flutter_version
+ENV FLUTTER_ROOT=$FLUTTER_HOME
+ENV PATH="$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin:$HOME/.pub-cache/bin:${PATH}"
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -12,14 +18,19 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         wget \
         unzip \
         libstdc++6 \
-        ca-certificates && \
+        ca-certificates \
+        xz-utils \
+        zip \
+        libglu1-mesa && \
     DEBIAN_FRONTEND=noninteractive apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN git clone --depth 1 --branch stable https://github.com/flutter/flutter.git "$FLUTTER_ROOT"
+RUN git clone --depth 1 --branch ${FLUTTER_VERSION} https://github.com/flutter/flutter.git ${FLUTTER_HOME}
 
 RUN flutter doctor && \
-    flutter config --enable-web
+    flutter config --enable-web && \
+    flutter precache --web && \
+    chown -R root:root ${FLUTTER_HOME}
 
 WORKDIR /app
 COPY . .
